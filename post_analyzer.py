@@ -1,8 +1,7 @@
 import asyncio
 import json
-from bs4 import BeautifulSoup
-from crawl4ai import AsyncWebCrawler
 from openai import OpenAI
+from constants import LLM_IRRELEVANT_RESPONSE
 
 def analyze_with_llm(post_data):
     """
@@ -21,7 +20,7 @@ def analyze_with_llm(post_data):
     )
     
     # Format the post data for analysis
-    prompt = f"""这是一个来自文学城子女教育的论坛帖子。请首先判断这个帖子是否与教育, 留学, 升学, 育儿, 择校, 职业规划, 心理健康等相关，如果不是，请直接返回“与教育无关”。如果是，请总结这篇论坛的帖子。根据原贴的题目和内容，以及回帖的内容，给出讨论的话题和结论。
+    prompt = f"""这是一个来自文学城子女教育的论坛帖子。请首先判断这个帖子是否与教育, 留学, 升学, 育儿, 择校, 职业规划, 心理健康等相关，如果不是，请直接返回"{LLM_IRRELEVANT_RESPONSE}"。如果是，请总结这篇论坛的帖子。根据原贴的题目和内容，以及回帖的内容，给出讨论的话题和结论。
 
 题目: {post_data['post_title']}
 

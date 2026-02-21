@@ -1,7 +1,9 @@
-#!/usr/bin/env python3
-"""
-Constants for the web crawler application.
-"""
+"""Constants used throughout the web scraping application."""
+
+ZNJY_CATEGORY = 'znjy'
+
+# Default page number
+DEFAULT_PAGE_NUMBER = 1
 
 # MySQL Database Configuration
 MYSQL_HOST = '192.168.86.55'
@@ -23,3 +25,6 @@ MAX_PAGE_NUMBER = 10
 
 # Default Values
 DEFAULT_CATEGORY = 'general'
+
+# LLM Analysis Constants
+LLM_IRRELEVANT_RESPONSE = 'irrelevant'

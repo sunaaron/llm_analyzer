@@ -128,6 +128,49 @@ def read_all_wxc_posts():
             cursor.close()
             connection.close()
 
+def update_wxc_post_llm_summary(post_id, llm_summary):
+    """
+    Update a post in wxc_posts table with the LLM summary.
+    
+    Args:
+        post_id (int): The ID of the post to update
+        llm_summary (str): The LLM-generated summary to store
+    
+    Returns:
+        bool: True if update was successful, False otherwise
+    """
+    connection = create_connection()
+    if connection is None:
+        return False
+    
+    try:
+        cursor = connection.cursor()
+        
+        # Query to update the post with LLM summary
+        update_query = """
+        UPDATE wxc_posts 
+        SET llm_summary = %s 
+        WHERE id = %s
+        """
+        
+        cursor.execute(update_query, (llm_summary, post_id))
+        connection.commit()
+        
+        if cursor.rowcount > 0:
+            print(f"Successfully updated post with ID {post_id}")
+            return True
+        else:
+            print(f"No post found with ID {post_id} to update")
+            return False
+            
+    except Error as e:
+        print(f"Error updating wxc_posts table: {e}")
+        return False
+    finally:
+        if connection and connection.is_connected():
+            cursor.close()
+            connection.close()
+
 def test_database_connection():
     """Test if we can connect to the database."""
     connection = create_connection()
