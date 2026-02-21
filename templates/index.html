@@ -29,27 +29,26 @@
             font-style: italic;
             padding: 20px;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
+        .post-row {
             border-bottom: 1px solid #ddd;
         }
-        th {
-            background-color: #4CAF50;
-            color: white;
-            font-weight: bold;
+        .post-row:nth-child(even) {
+            background-color: #f9f9f9;
         }
-        tr:hover {
-            background-color: #f5f5f5;
+        .post-row:nth-child(odd) {
+            background-color: #ffffff;
+        }
+        .post-header {
+            font-weight: bold;
+            color: #2196F3;
+        }
+        .post-body {
+            padding: 10px 0;
         }
         .summary-cell {
-            max-width: 300px;
-            word-wrap: break-word;
+            padding: 10px 0;
+            font-style: italic;
+            color: #555;
         }
         .url-cell {
             max-width: 200px;
@@ -62,6 +61,18 @@
         .body-cell {
             max-width: 400px;
             word-wrap: break-word;
+        }
+        .post-container {
+            margin-bottom: 20px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+        .post-row-container {
+            padding: 10px;
+        }
+        .preformatted-text {
+            white-space: pre-wrap;
+            word-break: break-word;
         }
     </style>
 </head>
@@ -78,40 +89,39 @@
         </ul>
 
         {% if posts %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Post URL</th>
-                        <th>Post Title</th>
-                        <th>Post Body</th>
-                        <th>LLM Summary</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for post in posts %}
-                    <tr>
-                        <td>{{ post.id }}</td>
-                        <td class="url-cell">
-                            {% if post.post_url %}
-                                <a href="{{ post.post_url }}" target="_blank">{{ post.post_url }}</a>
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td class="title-cell">{{ post.post_title }}</td>
-                        <td class="body-cell">{{ post.post_body }}</td>
-                        <td class="summary-cell">
-                            {% if post.llm_summary %}
-                                {{ post.llm_summary }}
-                            {% else %}
-                                <em>No summary available</em>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            {% for post in posts %}
+            <div class="post-container">
+                <!-- Row 1: URL and Title -->
+                <div class="post-row">
+                    <div class="post-row-container">
+                        <strong>URL:</strong>
+                        {% if post.post_url %}
+                            <a href="{{ post.post_url }}" target="_blank" style="color: #2196F3;">{{ post.post_url }}</a>
+                        {% else %}
+                            N/A
+                        {% endif %}
+                        <br>
+                        <strong>Title:</strong> {{ post.post_title }}
+                    </div>
+                </div>
+                
+                <!-- Row 2: Body -->
+                <div class="post-row">
+                    <div class="post-row-container">
+                        <strong>Body:</strong><br>
+                        <span class="preformatted-text">{{ post.post_body }}</span>
+                    </div>
+                </div>
+                
+                <!-- Row 3: LLM Summary -->
+                <div class="post-row">
+                    <div class="post-row-container">
+                        <strong>LLM Summary:</strong><br>
+                        <span class="preformatted-text">{{ post.llm_summary }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         {% else %}
             <div class="no-posts-message">
                 <p>No posts with LLM summaries found.</p>
