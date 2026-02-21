@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WXC Posts Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .no-posts-message {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .summary-cell {
+            max-width: 300px;
+            word-wrap: break-word;
+        }
+        .url-cell {
+            max-width: 200px;
+            word-wrap: break-word;
+        }
+        .title-cell {
+            font-weight: bold;
+            color: #2196F3;
+        }
+        .body-cell {
+            max-width: 400px;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WXC Posts Dashboard</h1>
+        
+        <p>This dashboard displays posts from the wxc_posts table with the following attributes:</p>
+        <ul>
+            <li><strong>post_url</strong> - The URL of the post</li>
+            <li><strong>post_title</strong> - The title of the post</li>
+            <li><strong>post_body</strong> - The content/body of the post</li>
+            <li><strong>llm_summary</strong> - The LLM-generated summary of the post</li>
+        </ul>
+
+        {% if posts %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Post URL</th>
+                        <th>Post Title</th>
+                        <th>Post Body</th>
+                        <th>LLM Summary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for post in posts %}
+                    <tr>
+                        <td>{{ post.id }}</td>
+                        <td class="url-cell">
+                            {% if post.post_url %}
+                                <a href="{{ post.post_url }}" target="_blank">{{ post.post_url }}</a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td class="title-cell">{{ post.post_title }}</td>
+                        <td class="body-cell">{{ post.post_body }}</td>
+                        <td class="summary-cell">
+                            {% if post.llm_summary %}
+                                {{ post.llm_summary }}
+                            {% else %}
+                                <em>No summary available</em>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="no-posts-message">
+                <p>No posts with LLM summaries found.</p>
+                <p>Please ensure that posts have been analyzed and have non-empty LLM summaries.</p>
+            </div>
+        {% endif %}
+        
+        <p><em>Note: Only posts with available LLM summaries are displayed.</em></p>
+    </div>
+</body>
+</html>
