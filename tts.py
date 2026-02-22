@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import json
 import argparse
-from mysql_utils import read_wxc_posts_by_category_date_and_is_useful
+from mysql_utils import read_wxc_post_summaries_by_category_date_and_is_useful
 from datetime import datetime, timedelta
 
 def generate_tts(category, date_str):
@@ -22,7 +22,7 @@ def generate_tts(category, date_str):
     print(f"Fetching posts for category '{category}' with date '{date_str}'...")
     
     # Fetch all useful posts of the specified category and date_str
-    posts = read_wxc_posts_by_category_date_and_is_useful(category, date_str)
+    posts = read_wxc_post_summaries_by_category_date_and_is_useful(category, date_str)
     
     if posts:
         print(f"Successfully fetched {len(posts)} posts:")
@@ -33,10 +33,9 @@ def generate_tts(category, date_str):
             
             # Wrap each post as a dictionary with the required structure
             post_data = {
-                'post_title': post.get('post_title', ''),
-                'post_content': post.get('post_body', ''),
-                'comments': json.loads(post.get('comments', '[]'))
+                'llm_summary': post.get('llm_summary', ''),
             }
+            print(post_data)
             
     else:
         print("No posts found matching the criteria.")
