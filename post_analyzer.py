@@ -1,8 +1,8 @@
 import json
 from openai import OpenAI
-from constants import LLM_IRRELEVANT_RESPONSE
+from constants import ZNJY_PROMPT, TZLC_CATEGORY, TZLC_PROMPT
 
-def analyze_with_llm(post_data):
+def analyze_with_llm(post_data, category):
     """
     Analyze the extracted post data using a local LLM.
     
@@ -17,10 +17,9 @@ def analyze_with_llm(post_data):
         base_url="http://127.0.0.1:1234/v1",
         api_key="not-needed"  # Local LLM doesn't require a real API key
     )
-    
-    # Format the post data for analysis
-    prompt = f"""这是一个来自文学城子女教育的论坛帖子。请首先判断这个帖子是否与教育, 留学, 升学, 育儿, 择校, 职业规划, 心理健康等相关，如果不是，请直接返回"{LLM_IRRELEVANT_RESPONSE}"。如果是，请务必用中文总结这篇论坛的帖子。根据原贴的题目和内容，以及回帖的内容，给出讨论的话题和结论。注意不要返回英文的总结. 
 
+    # Format the post data for analysis
+    raw_data = f"""
 题目: {post_data['post_title']}
 
 内容: {post_data['post_content']}
@@ -28,7 +27,11 @@ def analyze_with_llm(post_data):
 回帖 ({len(post_data['comments'])} 条):
 {chr(10).join(f"{i+1}. {comment}" for i, comment in enumerate(post_data['comments']))}
 """
-    
+    base_prompt = constants.ZNJY_PROMPT
+    if category == 'tzlc':
+        base_prompt = constants.TZLC_PROMPT
+    prompt = base_prompt + "\n\n" + raw_data
+
     try:
         # Call the local LLM
         response = client.chat.completions.create(
