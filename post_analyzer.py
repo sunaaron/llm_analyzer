@@ -1,4 +1,3 @@
-import asyncio
 import json
 from openai import OpenAI
 from constants import LLM_IRRELEVANT_RESPONSE

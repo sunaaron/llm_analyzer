@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-MySQL reader to read from wxc_posts table in the remote MySQL instance.
+MySQL utils to work with wxc_posts table in the remote MySQL instance.
 """
 
 import mysql.connector

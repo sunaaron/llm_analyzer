@@ -4,7 +4,7 @@ Main entry point for the wxc_reader application.
 """
 import json
 import argparse
-from mysql_reader import read_wxc_posts_by_category_date_and_unsummarized, update_wxc_post_llm_summary
+from mysql_utils import read_wxc_posts_by_category_date_and_unsummarized, update_wxc_post_llm_summary
 from post_analyzer import analyze_with_llm
 from constants import LLM_IRRELEVANT_RESPONSE
 from datetime import datetime, timedelta
