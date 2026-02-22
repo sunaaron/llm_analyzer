@@ -3,12 +3,12 @@ import asyncio
 from fileinput import filename
 import edge_tts
 import argparse
-from mysql_utils import read_wxc_post_summaries_by_category_date_and_is_useful
+from mysql_utils import read_wxc_post_summaries_by_category_date_and_is_useful, read_wxc_posts_by_category_and_date
 from datetime import datetime, timedelta
 from constants import TTS_VOICE_NAMES, TTS_OUTPUT_DIR 
 import os
 
-def remove_special_signs(text):
+def remove_special_chars(text):
     """
     Remove * and # from a string.
     
@@ -27,7 +27,7 @@ async def generate_tts_audio(order, text, filename):
         filename (str): The output filename
     """
     try:
-        cleaned_text = remove_special_signs(text)
+        cleaned_text = remove_special_chars(text)
         index = order % len(TTS_VOICE_NAMES)
         communicate = edge_tts.Communicate(cleaned_text, TTS_VOICE_NAMES[index])
         output_path = os.path.join(TTS_OUTPUT_DIR, filename)
@@ -57,7 +57,10 @@ async def generate_tts(category, date_str):
     
     # Fetch all useful posts of the specified category and date_str
     posts = read_wxc_post_summaries_by_category_date_and_is_useful(category, date_str)
-    
+    if len(posts) == 0:
+        # backup read
+        posts = read_wxc_posts_by_category_and_date(category, date_str)
+
     if posts:
         print(f"Successfully fetched {len(posts)} posts:")
         
