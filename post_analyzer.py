@@ -27,9 +27,9 @@ def analyze_with_llm(post_data, category):
 回帖 ({len(post_data['comments'])} 条):
 {chr(10).join(f"{i+1}. {comment}" for i, comment in enumerate(post_data['comments']))}
 """
-    base_prompt = constants.ZNJY_PROMPT
+    base_prompt = ZNJY_PROMPT
     if category == 'tzlc':
-        base_prompt = constants.TZLC_PROMPT
+        base_prompt = TZLC_PROMPT
     prompt = base_prompt + "\n\n" + raw_data
 
     try:

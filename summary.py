@@ -44,7 +44,7 @@ def summarize(category, date_str):
             }
             
             # Analyze with LLM and get the result
-            analysis_result = analyze_with_llm(post_data)
+            analysis_result = analyze_with_llm(post_data, category)
                         
             # Update the database with the LLM summary (only if not irrelevant)
             post_id = post.get('id')
