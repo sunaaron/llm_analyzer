@@ -134,16 +134,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>WXC Posts Dashboard</h1>
-        
-        <p>This dashboard displays posts from the wxc_posts table with the following attributes:</p>
-        <ul>
-            <li><strong>post_url</strong> - The URL of the post</li>
-            <li><strong>post_title</strong> - The title of the post</li>
-            <li><strong>post_body</strong> - The content/body of the post</li>
-            <li><strong>llm_summary</strong> - The LLM-generated summary of the post</li>
-            <li><strong>is_useful</strong> - Toggle indicating if this post is useful</li>
-        </ul>
+        <h1>WXC Posts Summary</h1>
 
         {% if posts %}
             {% for post in posts %}
