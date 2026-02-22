@@ -48,18 +48,18 @@ def index():
     # Get filter parameters from query string
     filter_param = request.args.get('filter', 'both')
     date_filter = request.args.get('date', '')
+    category_filter = request.args.get('category', 'znjy')  # Default to 'znjy' (子女教育)
     
     # Get top 15 dates for the dropdown
     top_dates = get_top_15_dates()
     
     # Use the new function to get posts by latest date for a specific category
-    # For now, we'll use "znjy" as the default category
     if date_filter:
         # If a specific date is selected, get posts for that date and category
-        posts = read_wxc_posts_by_category_and_date("znjy", date_filter)
+        posts = read_wxc_posts_by_category_and_date(category_filter, date_filter)
     else:
         # Otherwise, get posts for the latest date in the category
-        posts = read_wxc_posts_by_category_and_latest_date("znjy")
+        posts = read_wxc_posts_by_category_and_latest_date(category_filter)
     
     # Prepare data for display - only show posts with non-empty LLM summaries
     display_data = []
@@ -93,7 +93,7 @@ def index():
                     'is_useful': is_useful
                 })
     
-    return render_template('index.html', posts=display_data, filter=filter_param, date_filter=date_filter, top_dates=top_dates)
+    return render_template('index.html', posts=display_data, filter=filter_param, date_filter=date_filter, category_filter=category_filter, top_dates=top_dates)
 
 @app.route('/update_is_useful/<int:post_id>/<int:value>')
 def update_is_useful(post_id, value):

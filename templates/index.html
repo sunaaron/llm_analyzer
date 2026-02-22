@@ -170,9 +170,15 @@
         
         <!-- Filter section -->
         <div class="filter-container">
+            <span class="filter-label">Filter by Category:</span>
+            <select id="categoryFilter" class="filter-select" onchange="applyCategoryFilter()">
+                <option value="znjy" {% if category_filter == 'znjy' %}selected{% endif %}>子女教育</option>
+                <option value="tzlc" {% if category_filter == 'tzlc' %}selected{% endif %}>投资理财</option>
+            </select>
+            
             <span class="filter-label">Filter by Date:</span>
             <select id="dateFilter" class="filter-select" onchange="applyDateFilter()">
-                <option value="">All Dates</option>
+                <option value="">Latest Date</option>
                 {% for date in top_dates %}
                 <option value="{{ date }}" {% if date_filter == date %}selected{% endif %}>{{ date }}</option>
                 {% endfor %}
@@ -308,16 +314,31 @@
             }
         }
 
+        // Function to apply category filter
+        function applyCategoryFilter() {
+            const categoryValue = document.getElementById('categoryFilter').value;
+            const dateValue = document.getElementById('dateFilter').value;
+            const filterValue = document.getElementById('usefulFilter').value;
+            
+            // Redirect to the same page with all filter parameters
+            if (dateValue) {
+                window.location.href = `/?category=${categoryValue}&date=${dateValue}&filter=${filterValue}`;
+            } else {
+                window.location.href = `/?category=${categoryValue}&filter=${filterValue}`;
+            }
+        }
+
         // Function to apply date filter
         function applyDateFilter() {
             const dateValue = document.getElementById('dateFilter').value;
             const filterValue = document.getElementById('usefulFilter').value;
+            const categoryValue = document.getElementById('categoryFilter').value;
             
-            // Redirect to the same page with both filter parameters
-            if (dateValue) {
-                window.location.href = `/?date=${dateValue}&filter=${filterValue}`;
+            // Redirect to the same page with all filter parameters
+            if (categoryValue) {
+                window.location.href = `/?category=${categoryValue}&date=${dateValue}&filter=${filterValue}`;
             } else {
-                window.location.href = `/?filter=${filterValue}`;
+                window.location.href = `/?date=${dateValue}&filter=${filterValue}`;
             }
         }
 
@@ -325,12 +346,13 @@
         function applyFilter() {
             const filterValue = document.getElementById('usefulFilter').value;
             const dateValue = document.getElementById('dateFilter').value;
+            const categoryValue = document.getElementById('categoryFilter').value;
             
-            // Redirect to the same page with both filter parameters
-            if (dateValue) {
-                window.location.href = `/?date=${dateValue}&filter=${filterValue}`;
+            // Redirect to the same page with all filter parameters
+            if (categoryValue) {
+                window.location.href = `/?category=${categoryValue}&date=${dateValue}&filter=${filterValue}`;
             } else {
-                window.location.href = `/?filter=${filterValue}`;
+                window.location.href = `/?date=${dateValue}&filter=${filterValue}`;
             }
         }
     </script>
