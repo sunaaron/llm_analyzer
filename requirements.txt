@@ -5,3 +5,4 @@ crawl4ai>=0.8.0
 mysql-connector-python>=8.0.0
 openai>=0.27.0
 Flask>=2.0.0
+edge_tts>=0.1.0

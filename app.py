@@ -4,7 +4,7 @@ Flask web service to display wxc_posts table data.
 """
 
 from flask import Flask, render_template, jsonify, request
-from mysql_reader import read_all_wxc_posts, update_wxc_post_is_useful, update_wxc_post_llm_summary, delete_wxc_post
+from mysql_utils import read_all_wxc_posts, update_wxc_post_is_useful, update_wxc_post_llm_summary, delete_wxc_post
 import os
 
 app = Flask(__name__)
