@@ -3,16 +3,31 @@
 Main entry point for the wxc_reader application.
 """
 import json
+import argparse
 from mysql_reader import read_wxc_posts_by_category_date_and_unsummarized, update_wxc_post_llm_summary
 from post_analyzer import analyze_with_llm
 from constants import LLM_IRRELEVANT_RESPONSE
+from datetime import datetime, timedelta
 
-def main():
-    """Main function to fetch posts by category and date."""
-    print("Fetching posts for category 'znjy' with date '02182026'...")
+def main(category, date_str):
+    """Main function to fetch posts by category and date.
     
-    # Fetch all posts of category "znjy" and date_str = "02182026"
-    posts = read_wxc_posts_by_category_date_and_unsummarized("znjy", "02182026")
+    Args:
+        category (str): The category to filter by. Defaults to 'znjy'.
+        date_str (str): The date string in mmddyyyy format. Defaults to today's date minus 3 days.
+    """
+    # If no date_str provided, calculate it as today's date minus 3 days
+    if not date_str:
+        # Get current date and subtract 3 days
+        current_date = datetime.now()
+        three_days_ago = current_date - timedelta(days=3)
+        # Format as mmddyyyy
+        date_str = three_days_ago.strftime("%m%d%Y")
+    
+    print(f"Fetching posts for category '{category}' with date '{date_str}'...")
+    
+    # Fetch all posts of the specified category and date_str
+    posts = read_wxc_posts_by_category_date_and_unsummarized(category, date_str)
     
     if posts:
         print(f"Successfully fetched {len(posts)} posts:")
@@ -45,4 +60,13 @@ def main():
         print("No posts found matching the criteria.")
 
 if __name__ == "__main__":
-    main()
+
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='Process WXC posts')
+    parser.add_argument('--category', default='znjy', help='Category to filter by (default: znjy)')
+    parser.add_argument('--date_str', default='', help='Date string in mmddyyyy format (default: 3 days ago)')
+    
+    args = parser.parse_args()
+    
+    # Call main function with parsed arguments
+    main(args.category, args.date_str)
