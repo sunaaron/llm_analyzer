@@ -107,74 +107,6 @@ def read_wxc_posts_by_category_and_latest_date(category):
             cursor.close()
             connection.close()
 
-def read_wxc_posts_by_category(category):
-    """
-    Read posts from wxc_posts table filtered by category only.
-    
-    Args:
-        category (str): The category to filter by
-    
-    Returns:
-        list: List of posts matching the category, or empty list if none found
-    """
-    connection = create_connection()
-    if connection is None:
-        return []
-    
-    try:
-        cursor = connection.cursor(dictionary=True)
-        
-        # Query to select posts by category only
-        select_query = """
-        SELECT * FROM wxc_posts 
-        WHERE category = %s
-        """
-        
-        cursor.execute(select_query, (category,))
-        results = cursor.fetchall()
-        
-        print(f"Found {len(results)} posts matching category '{category}'")
-        return results
-        
-    except Error as e:
-        print(f"Error reading from wxc_posts table: {e}")
-        return []
-    finally:
-        if connection and connection.is_connected():
-            cursor.close()
-            connection.close()
-
-def read_all_wxc_posts():
-    """
-    Read all posts from wxc_posts table.
-    
-    Returns:
-        list: All posts in the table, or empty list if none found
-    """
-    connection = create_connection()
-    if connection is None:
-        return []
-    
-    try:
-        cursor = connection.cursor(dictionary=True)
-        
-        # Query to select all posts
-        select_query = "SELECT * FROM wxc_posts"
-        
-        cursor.execute(select_query)
-        results = cursor.fetchall()
-        
-        print(f"Found {len(results)} total posts in wxc_posts table")
-        return results
-        
-    except Error as e:
-        print(f"Error reading from wxc_posts table: {e}")
-        return []
-    finally:
-        if connection and connection.is_connected():
-            cursor.close()
-            connection.close()
-
 def update_wxc_post_llm_summary(post_id, llm_summary):
     """
     Update a post in wxc_posts table with the LLM summary.
@@ -368,7 +300,7 @@ def read_wxc_post_summaries_by_category_date_and_is_useful(category, date_str):
         # Query to select posts by category and date_str, 
         # ensuring is_useful = 1
         select_query = """
-        SELECT id, post_url, llm_summary FROM wxc_posts 
+        SELECT id, llm_summary FROM wxc_posts 
         WHERE category = %s AND date_str = %s AND is_useful = 1
         """
         
@@ -406,9 +338,3 @@ if __name__ == "__main__":
     # Example queries
     print("\n--- Reading posts by category and date ---")
     posts = read_wxc_posts_by_category_and_date("znjy", "02212025")
-    
-    print("\n--- Reading posts by category only ---")
-    posts = read_wxc_posts_by_category("znjy")
-    
-    print("\n--- Reading all posts ---")
-    posts = read_all_wxc_posts()
