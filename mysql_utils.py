@@ -368,7 +368,7 @@ def read_wxc_post_summaries_by_category_date_and_is_useful(category, date_str):
         # Query to select posts by category and date_str, 
         # ensuring is_useful = 1
         select_query = """
-        SELECT id, llm_summary FROM wxc_posts 
+        SELECT id, post_url, llm_summary FROM wxc_posts 
         WHERE category = %s AND date_str = %s AND is_useful = 1
         """
         
