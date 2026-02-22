@@ -1,15 +1,10 @@
 #!/usr/bin/env python3
-"""
-Main entry point for the wxc_reader application.
-"""
 import json
 import argparse
-from mysql_utils import read_wxc_posts_by_category_date_and_unsummarized, update_wxc_post_llm_summary
-from post_analyzer import analyze_with_llm
-from constants import LLM_IRRELEVANT_RESPONSE
+from mysql_utils import read_wxc_posts_by_category_date_and_is_useful
 from datetime import datetime, timedelta
 
-def summarize(category, date_str):
+def generate_tts(category, date_str):
     """Main function to fetch posts by category and date.
     
     Args:
@@ -26,8 +21,8 @@ def summarize(category, date_str):
     
     print(f"Fetching posts for category '{category}' with date '{date_str}'...")
     
-    # Fetch all posts of the specified category and date_str
-    posts = read_wxc_posts_by_category_date_and_unsummarized(category, date_str)
+    # Fetch all useful posts of the specified category and date_str
+    posts = read_wxc_posts_by_category_date_and_is_useful(category, date_str)
     
     if posts:
         print(f"Successfully fetched {len(posts)} posts:")
@@ -43,30 +38,17 @@ def summarize(category, date_str):
                 'comments': json.loads(post.get('comments', '[]'))
             }
             
-            # Analyze with LLM and get the result
-            analysis_result = analyze_with_llm(post_data)
-                        
-            # Update the database with the LLM summary (only if not irrelevant)
-            post_id = post.get('id')
-            if post_id and analysis_result != LLM_IRRELEVANT_RESPONSE:
-                print(f"Updating database record with ID {post_id}...")
-                update_wxc_post_llm_summary(post_id, analysis_result)
-            elif post_id:
-                print(f"Skipping database update for ID {post_id} - result is irrelevant")
-            else:
-                print("Warning: Could not find post ID to update database")
-            
     else:
         print("No posts found matching the criteria.")
 
 if __name__ == "__main__":
 
     # Parse command line arguments
-    parser = argparse.ArgumentParser(description='Summarize WXC posts')
+    parser = argparse.ArgumentParser(description='Generate TTS for WXC posts')
     parser.add_argument('--category', default='znjy', help='Category to filter by (default: znjy)')
     parser.add_argument('--date_str', default='', help='Date string in mmddyyyy format (default: 3 days ago)')
     
     args = parser.parse_args()
     
-    # Call summarize function with parsed arguments
-    summarize(args.category, args.date_str)
+    # Call generate_tts function with parsed arguments
+    generate_tts(args.category, args.date_str)

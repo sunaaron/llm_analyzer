@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-MySQL utils to work with wxc_posts table in the remote MySQL instance.
+MySQL reader to read from wxc_posts table in the remote MySQL instance.
 """
 
 import mysql.connector
@@ -289,6 +289,46 @@ def read_wxc_posts_by_category_date_and_unsummarized(category, date_str):
         results = cursor.fetchall()
         
         print(f"Found {len(results)} unsummarized posts matching category '{category}' and date '{date_str}'")
+        return results
+        
+    except Error as e:
+        print(f"Error reading from wxc_posts table: {e}")
+        return []
+    finally:
+        if connection and connection.is_connected():
+            cursor.close()
+            connection.close()
+
+def read_wxc_posts_by_category_date_and_is_useful(category, date_str):
+    """
+    Read posts from wxc_posts table filtered by category, date_str, 
+    and is_useful = 1.
+    
+    Args:
+        category (str): The category to filter by
+        date_str (str): The date string in mmddyyyy format to filter by
+    
+    Returns:
+        list: List of posts matching the criteria, or empty list if none found
+    """
+    connection = create_connection()
+    if connection is None:
+        return []
+    
+    try:
+        cursor = connection.cursor(dictionary=True)
+        
+        # Query to select posts by category and date_str, 
+        # ensuring is_useful = 1
+        select_query = """
+        SELECT * FROM wxc_posts 
+        WHERE category = %s AND date_str = %s AND is_useful = 1
+        """
+        
+        cursor.execute(select_query, (category, date_str))
+        results = cursor.fetchall()
+        
+        print(f"Found {len(results)} useful posts matching category '{category}' and date '{date_str}'")
         return results
         
     except Error as e:
