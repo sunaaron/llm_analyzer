@@ -16,7 +16,7 @@ def remove_special_signs(text):
         text (str): The input string to process
 
     """
-    return text.replace('*', '').replace('#', '')
+    return text.replace('*', '').replace('#', '').replace('<br>', ' ').replace('-', '')
 
 async def generate_tts_audio(order, text, filename):
     """
