@@ -166,7 +166,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>WXC Posts Summary</h1>
+        <h1>WXC Posts Summary (Latest by Category)</h1>
         
         <!-- Filter section -->
         <div class="filter-container">
@@ -227,7 +227,7 @@
             {% endfor %}
         {% else %}
             <div class="no-posts-message">
-                <p>No posts with LLM summaries found.</p>
+                <p>No posts with LLM summaries found for the latest date in the category.</p>
                 <p>Please ensure that posts have been analyzed and have non-empty LLM summaries.</p>
             </div>
         {% endif %}

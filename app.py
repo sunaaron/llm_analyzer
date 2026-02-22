@@ -4,7 +4,7 @@ Flask web service to display wxc_posts table data.
 """
 
 from flask import Flask, render_template, jsonify, request
-from mysql_utils import read_all_wxc_posts, update_wxc_post_is_useful, update_wxc_post_llm_summary, delete_wxc_post
+from mysql_utils import read_all_wxc_posts, update_wxc_post_is_useful, update_wxc_post_llm_summary, delete_wxc_post, read_wxc_posts_by_category_and_latest_date
 import os
 
 app = Flask(__name__)
@@ -15,7 +15,10 @@ def index():
     # Get filter parameter from query string, default to 'both'
     filter_param = request.args.get('filter', 'both')
     
-    posts = read_all_wxc_posts()
+    # For now, we'll use the new function to get posts by category and latest date
+    # Since there's no specific category filter in the UI yet, we'll get posts from all categories
+    # and then filter by latest date for each category
+    posts = read_wxc_posts_by_category_and_latest_date("znjy")  # Default to znjy category for now
     
     # Prepare data for display - only show posts with non-empty LLM summaries
     display_data = []
