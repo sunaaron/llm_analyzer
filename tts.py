@@ -5,19 +5,37 @@ import edge_tts
 import argparse
 from mysql_utils import read_wxc_post_summaries_by_category_date_and_is_useful
 from datetime import datetime, timedelta
-from constants import TTS_VOICE_NAME        
+from constants import TTS_VOICE_NAME, TTS_OUTPUT_DIR 
+import os
 
-def remove_asterisk_sign(text):
+def remove_special_signs(text):
     """
-    Remove all asterisk signs (*) from a string.
+    Remove * and # from a string.
     
     Args:
         text (str): The input string to process
-        
-    Returns:
-        str: The string with all asterisk signs removed
+
     """
-    return text.replace('*', '')
+    return text.replace('*', '').replace('#', '')
+
+async def generate_tts_audio(text, filename):
+    """
+    Generate TTS audio from text and save to file.
+    
+    Args:
+        text (str): The text to convert to speech
+        filename (str): The output filename
+    """
+    try:
+        cleaned_text = remove_special_signs(text)
+        communicate = edge_tts.Communicate(cleaned_text, TTS_VOICE_NAME)
+        output_path = os.path.join(TTS_OUTPUT_DIR, filename)
+        await communicate.save(output_path)
+        print(f"Saved: {output_path}")
+        return output_path
+    except Exception as e:
+        print(f"Error generating TTS for {filename}: {str(e)}")
+        return None
 
 async def generate_tts(category, date_str):
     """Main function to fetch posts by category and date.
@@ -53,13 +71,10 @@ async def generate_tts(category, date_str):
                 'llm_summary': post.get('llm_summary', ''),
             }
             text = post_data['llm_summary']
-            # Remove asterisk signs from the text
-            cleaned_text = remove_asterisk_sign(text)
             filename = f"{post_data['id']}.mp3"
-            communicate = edge_tts.Communicate(cleaned_text, TTS_VOICE_NAME)
-            await communicate.save(filename)
-            print(f"Saved: {filename}")
-            break
+            
+            # Generate TTS audio
+            await generate_tts_audio(text, filename)
             
     else:
         print("No posts found matching the criteria.")
