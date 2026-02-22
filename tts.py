@@ -5,7 +5,7 @@ import edge_tts
 import argparse
 from mysql_utils import read_wxc_post_summaries_by_category_date_and_is_useful
 from datetime import datetime, timedelta
-from constants import TTS_VOICE_NAME, TTS_OUTPUT_DIR 
+from constants import TTS_VOICE_NAMES, TTS_OUTPUT_DIR 
 import os
 
 def remove_special_signs(text):
@@ -18,7 +18,7 @@ def remove_special_signs(text):
     """
     return text.replace('*', '').replace('#', '')
 
-async def generate_tts_audio(text, filename):
+async def generate_tts_audio(order, text, filename):
     """
     Generate TTS audio from text and save to file.
     
@@ -28,7 +28,8 @@ async def generate_tts_audio(text, filename):
     """
     try:
         cleaned_text = remove_special_signs(text)
-        communicate = edge_tts.Communicate(cleaned_text, TTS_VOICE_NAME)
+        index = order % len(TTS_VOICE_NAMES)
+        communicate = edge_tts.Communicate(cleaned_text, TTS_VOICE_NAMES[index])
         output_path = os.path.join(TTS_OUTPUT_DIR, filename)
         await communicate.save(output_path)
         print(f"Saved: {output_path}")
@@ -74,7 +75,7 @@ async def generate_tts(category, date_str):
             filename = f"{post_data['id']}.mp3"
             
             # Generate TTS audio
-            await generate_tts_audio(text, filename)
+            await generate_tts_audio(i, text, filename)
             
     else:
         print("No posts found matching the criteria.")

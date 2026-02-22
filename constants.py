@@ -24,5 +24,5 @@ DEFAULT_CATEGORY = 'general'
 
 # LLM Analysis Constants
 LLM_IRRELEVANT_RESPONSE = 'irrelevant'
-TTS_VOICE_NAME = 'zh-CN-XiaoxiaoNeural'  # Example voice name for TTS
+TTS_VOICE_NAMES = ['zh-CN-XiaoxiaoNeural', 'zh-CN-YunxiNeural']  # Example voice name for TTS
 TTS_OUTPUT_DIR = '/Users/aaronsun/Dropbox/Audiobook/wxc/'  # Directory to save TTS audio files
