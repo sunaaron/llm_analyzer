@@ -4,7 +4,7 @@ Flask web service to display wxc_posts table data.
 """
 
 from flask import Flask, render_template, jsonify
-from mysql_reader import read_all_wxc_posts, update_wxc_post_is_useful
+from mysql_reader import read_all_wxc_posts, update_wxc_post_is_useful, update_wxc_post_llm_summary, delete_wxc_post
 import os
 
 app = Flask(__name__)
@@ -34,6 +34,12 @@ def index():
 def update_is_useful(post_id, value):
     """Endpoint to update the is_useful field of a post."""
     success = update_wxc_post_is_useful(post_id, bool(value))
+    return jsonify({'success': success})
+
+@app.route('/delete_post/<int:post_id>')
+def delete_post(post_id):
+    """Endpoint to delete a post from the database."""
+    success = delete_wxc_post(post_id)
     return jsonify({'success': success})
 
 if __name__ == '__main__':

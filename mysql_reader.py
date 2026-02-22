@@ -217,6 +217,47 @@ def update_wxc_post_is_useful(post_id, is_useful):
             cursor.close()
             connection.close()
 
+def delete_wxc_post(post_id):
+    """
+    Delete a post from wxc_posts table.
+    
+    Args:
+        post_id (int): The ID of the post to delete
+    
+    Returns:
+        bool: True if deletion was successful, False otherwise
+    """
+    connection = create_connection()
+    if connection is None:
+        return False
+    
+    try:
+        cursor = connection.cursor()
+        
+        # Query to delete the post
+        delete_query = """
+        DELETE FROM wxc_posts 
+        WHERE id = %s
+        """
+        
+        cursor.execute(delete_query, (post_id,))
+        connection.commit()
+        
+        if cursor.rowcount > 0:
+            print(f"Successfully deleted post with ID {post_id}")
+            return True
+        else:
+            print(f"No post found with ID {post_id} to delete")
+            return False
+            
+    except Error as e:
+        print(f"Error deleting from wxc_posts table: {e}")
+        return False
+    finally:
+        if connection and connection.is_connected():
+            cursor.close()
+            connection.close()
+
 def read_wxc_posts_by_category_date_and_unsummarized(category, date_str):
     """
     Read posts from wxc_posts table filtered by category, date_str, 

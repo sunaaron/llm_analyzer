@@ -130,6 +130,23 @@
         .post-row-header-content {
             flex: 1;
         }
+        .delete-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 12px;
+            margin-left: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            float: right;
+        }
+        .delete-button:hover {
+            background-color: #d32f2f;
+        }
     </style>
 </head>
 <body>
@@ -153,13 +170,14 @@
                                 <br>
                                 <strong>Title:</strong> {{ post.post_title }}
                             </div>
-                            <!-- Toggle for is_useful -->
+                            <!-- Toggle for is_useful and Delete button -->
                             <div class="toggle-container">
                                 <span class="toggle-label">Is Useful:</span>
                                 <label class="toggle-switch">
                                     <input type="checkbox" id="toggle-{{ post.id }}" {% if post.is_useful %}checked{% endif %}>
                                     <span class="slider"></span>
                                 </label>
+                                <button class="delete-button" onclick="confirmDelete({{ post.id }})">Delete</button>
                             </div>
                         </div>
                     </div>
@@ -227,6 +245,35 @@
                 });
             });
         });
+
+        // Function to confirm and delete a post
+        function confirmDelete(postId) {
+            if (confirm('Are you sure you want to delete this post?')) {
+                // If user confirms, send delete request to server
+                fetch(`/delete_post/${postId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log(`Successfully deleted post ${postId}`);
+                        // Remove the post container from the DOM
+                        const postElement = document.querySelector(`.post-container`).closest('.post-container');
+                        // Find the specific post container by ID or other means
+                        // For now, we'll reload the page to refresh the display
+                        location.reload();
+                    } else {
+                        console.error(`Failed to delete post ${postId}`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting post:', error);
+                });
+            }
+        }
     </script>
 </body>
 </html>
