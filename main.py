@@ -14,15 +14,15 @@ def summarize(category, date_str):
     
     Args:
         category (str): The category to filter by. Defaults to 'znjy'.
-        date_str (str): The date string in mmddyyyy format. Defaults to today's date minus 3 days.
+        date_str (str): The date string in yyyymmdd format. Defaults to today's date minus 3 days.
     """
     # If no date_str provided, calculate it as today's date minus 3 days
     if not date_str:
         # Get current date and subtract 3 days
         current_date = datetime.now()
         three_days_ago = current_date - timedelta(days=3)
-        # Format as mmddyyyy
-        date_str = three_days_ago.strftime("%m%d%Y")
+        # Format as yyyymmdd
+        date_str = three_days_ago.strftime("%Y%m%d")
     
     print(f"Fetching posts for category '{category}' with date '{date_str}'...")
     
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     # Parse command line arguments
     parser = argparse.ArgumentParser(description='Summarize WXC posts')
     parser.add_argument('--category', default='znjy', help='Category to filter by (default: znjy)')
-    parser.add_argument('--date_str', default='', help='Date string in mmddyyyy format (default: 3 days ago)')
+    parser.add_argument('--date_str', default='', help='Date string in yyyymmdd format (default: 3 days ago)')
     
     args = parser.parse_args()
     
