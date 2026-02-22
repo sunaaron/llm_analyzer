@@ -18,7 +18,7 @@ def remove_special_chars(text):
     """
     return text.replace('*', '').replace('#', '').replace('<br>', ' ').replace('-', '')
 
-async def generate_tts_audio(order, text, filename):
+async def generate_tts_audio(order, category, text, filename):
     """
     Generate TTS audio from text and save to file.
     
@@ -30,7 +30,7 @@ async def generate_tts_audio(order, text, filename):
         cleaned_text = remove_special_chars(text)
         index = order % len(TTS_VOICE_NAMES)
         communicate = edge_tts.Communicate(cleaned_text, TTS_VOICE_NAMES[index])
-        output_path = os.path.join(TTS_OUTPUT_DIR, filename)
+        output_path = os.path.join(TTS_OUTPUT_DIR, category, filename)
         await communicate.save(output_path)
         print(f"Saved: {output_path}")
         return output_path
@@ -79,7 +79,7 @@ async def generate_tts(category, date_str):
             filename = f"{category}_{post_data['id']}_{post_id}.mp3"
             
             # Generate TTS audio
-            await generate_tts_audio(i, text, filename)
+            await generate_tts_audio(i, category, text, filename)
             
     else:
         print("No posts found matching the criteria.")
