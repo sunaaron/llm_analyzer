@@ -60,6 +60,53 @@ def read_wxc_posts_by_category_and_date(category, date_str):
             cursor.close()
             connection.close()
 
+def read_wxc_posts_by_category_and_latest_date(category):
+    """
+    Read posts from wxc_posts table for the latest date in a given category.
+    
+    First fetches max(date_str) for the given category, then calls 
+    read_wxc_posts_by_category_and_date with that date.
+    
+    Args:
+        category (str): The category to filter by
+    
+    Returns:
+        list: List of posts matching the latest date in the category, 
+              or empty list if none found
+    """
+    connection = create_connection()
+    if connection is None:
+        return []
+    
+    try:
+        cursor = connection.cursor(dictionary=True)
+        
+        # First query to get the maximum date_str for the given category
+        max_date_query = """
+        SELECT MAX(date_str) as latest_date FROM wxc_posts 
+        WHERE category = %s
+        """
+        
+        cursor.execute(max_date_query, (category,))
+        result = cursor.fetchone()
+        
+        if result and result['latest_date']:
+            latest_date_str = result['latest_date']
+            
+            # Now call the existing function with the latest date
+            return read_wxc_posts_by_category_and_date(category, latest_date_str)
+        else:
+            print(f"No posts found for category '{category}'")
+            return []
+            
+    except Error as e:
+        print(f"Error reading from wxc_posts table: {e}")
+        return []
+    finally:
+        if connection and connection.is_connected():
+            cursor.close()
+            connection.close()
+
 def read_wxc_posts_by_category(category):
     """
     Read posts from wxc_posts table filtered by category only.
