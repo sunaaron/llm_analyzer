@@ -309,7 +309,7 @@ def read_wxc_post_summaries_by_category_date_and_is_useful(category, date_str):
         date_str (str): The date string in mmddyyyy format to filter by
     
     Returns:
-        list: List of (id, post_url, llm_summary) matching the criteria, or empty list if none found
+        list: List of (id, llm_summary) matching the criteria, or empty list if none found
     """
     connection = create_connection()
     if connection is None:
@@ -321,7 +321,7 @@ def read_wxc_post_summaries_by_category_date_and_is_useful(category, date_str):
         # Query to select posts by category and date_str, 
         # ensuring is_useful = 1
         select_query = """
-        SELECT id, post_url, llm_summary FROM wxc_posts 
+        SELECT id, llm_summary FROM wxc_posts 
         WHERE category = %s AND date_str = %s AND is_useful = 1
         """
         
