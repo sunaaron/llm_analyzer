@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-import json
+import asyncio
+from fileinput import filename
+import edge_tts
 import argparse
 from mysql_utils import read_wxc_post_summaries_by_category_date_and_is_useful
 from datetime import datetime, timedelta
+from constants import TTS_VOICE_NAME        
 
-def generate_tts(category, date_str):
+async def generate_tts(category, date_str):
     """Main function to fetch posts by category and date.
     
     Args:
@@ -33,9 +36,16 @@ def generate_tts(category, date_str):
             
             # Wrap each post as a dictionary with the required structure
             post_data = {
+                'id': post.get('id', ''),
+                'post_url': post.get('post_url', ''),
                 'llm_summary': post.get('llm_summary', ''),
             }
-            print(post_data)
+            text = post_data['llm_summary']
+            filename = f"{post_data['id']}.mp3"
+            communicate = edge_tts.Communicate(text, TTS_VOICE_NAME)
+            await communicate.save(filename)
+            print(f"Saved: {filename}")
+            break
             
     else:
         print("No posts found matching the criteria.")
@@ -50,4 +60,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     # Call generate_tts function with parsed arguments
-    generate_tts(args.category, args.date_str)
+    asyncio.run(generate_tts(args.category, args.date_str))
