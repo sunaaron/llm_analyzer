@@ -4,21 +4,62 @@ Flask web service to display wxc_posts table data.
 """
 
 from flask import Flask, render_template, jsonify, request
-from mysql_utils import read_all_wxc_posts, update_wxc_post_is_useful, update_wxc_post_llm_summary, delete_wxc_post, read_wxc_posts_by_category_and_latest_date
+from mysql_utils import read_all_wxc_posts, update_wxc_post_is_useful, update_wxc_post_llm_summary, delete_wxc_post, read_wxc_posts_by_category_and_latest_date, read_wxc_posts_by_category_and_date
 import os
 
 app = Flask(__name__)
 
+def get_top_15_dates():
+    """Get the top 15 most recent dates from the database."""
+    connection = None
+    try:
+        from mysql_utils import create_connection
+        connection = create_connection()
+        if connection is None:
+            return []
+        
+        cursor = connection.cursor(dictionary=True)
+        
+        # Query to get the top 15 most recent dates
+        select_query = """
+        SELECT DISTINCT date_str FROM wxc_posts 
+        ORDER BY date_str DESC 
+        LIMIT 15
+        """
+        
+        cursor.execute(select_query)
+        results = cursor.fetchall()
+        
+        # Extract just the date_str values
+        dates = [row['date_str'] for row in results]
+        return dates
+        
+    except Exception as e:
+        print(f"Error fetching dates: {e}")
+        return []
+    finally:
+        if connection and connection.is_connected():
+            cursor.close()
+            connection.close()
+
 @app.route('/')
 def index():
     """Main page to display wxc_posts table data."""
-    # Get filter parameter from query string, default to 'both'
+    # Get filter parameters from query string
     filter_param = request.args.get('filter', 'both')
+    date_filter = request.args.get('date', '')
     
-    # For now, we'll use the new function to get posts by category and latest date
-    # Since there's no specific category filter in the UI yet, we'll get posts from all categories
-    # and then filter by latest date for each category
-    posts = read_wxc_posts_by_category_and_latest_date("znjy")  # Default to znjy category for now
+    # Get top 15 dates for the dropdown
+    top_dates = get_top_15_dates()
+    
+    # Use the new function to get posts by latest date for a specific category
+    # For now, we'll use "znjy" as the default category
+    if date_filter:
+        # If a specific date is selected, get posts for that date and category
+        posts = read_wxc_posts_by_category_and_date("znjy", date_filter)
+    else:
+        # Otherwise, get posts for the latest date in the category
+        posts = read_wxc_posts_by_category_and_latest_date("znjy")
     
     # Prepare data for display - only show posts with non-empty LLM summaries
     display_data = []
@@ -52,7 +93,7 @@ def index():
                     'is_useful': is_useful
                 })
     
-    return render_template('index.html', posts=display_data, filter=filter_param)
+    return render_template('index.html', posts=display_data, filter=filter_param, date_filter=date_filter, top_dates=top_dates)
 
 @app.route('/update_is_useful/<int:post_id>/<int:value>')
 def update_is_useful(post_id, value):

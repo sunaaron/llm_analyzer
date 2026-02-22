@@ -170,6 +170,14 @@
         
         <!-- Filter section -->
         <div class="filter-container">
+            <span class="filter-label">Filter by Date:</span>
+            <select id="dateFilter" class="filter-select" onchange="applyDateFilter()">
+                <option value="">All Dates</option>
+                {% for date in top_dates %}
+                <option value="{{ date }}" {% if date_filter == date %}selected{% endif %}>{{ date }}</option>
+                {% endfor %}
+            </select>
+            
             <span class="filter-label">Filter by Useful Status:</span>
             <select id="usefulFilter" class="filter-select" onchange="applyFilter()">
                 <option value="both" {% if filter == 'both' %}selected{% endif %}>Both</option>
@@ -300,12 +308,30 @@
             }
         }
 
+        // Function to apply date filter
+        function applyDateFilter() {
+            const dateValue = document.getElementById('dateFilter').value;
+            const filterValue = document.getElementById('usefulFilter').value;
+            
+            // Redirect to the same page with both filter parameters
+            if (dateValue) {
+                window.location.href = `/?date=${dateValue}&filter=${filterValue}`;
+            } else {
+                window.location.href = `/?filter=${filterValue}`;
+            }
+        }
+
         // Function to apply filter
         function applyFilter() {
             const filterValue = document.getElementById('usefulFilter').value;
+            const dateValue = document.getElementById('dateFilter').value;
             
-            // Redirect to the same page with the filter parameter
-            window.location.href = `/?filter=${filterValue}`;
+            // Redirect to the same page with both filter parameters
+            if (dateValue) {
+                window.location.href = `/?date=${dateValue}&filter=${filterValue}`;
+            } else {
+                window.location.href = `/?filter=${filterValue}`;
+            }
         }
     </script>
 </body>
