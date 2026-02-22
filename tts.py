@@ -72,7 +72,8 @@ async def generate_tts(category, date_str):
                 'llm_summary': post.get('llm_summary', ''),
             }
             text = post_data['llm_summary']
-            filename = f"{category}_{post_data['id']}.mp3"
+            post_id = post_data['post_url'].split('/')[-1].split('.')[0]  # Extract post ID from URL
+            filename = f"{category}_{post_data['id']}_{post_id}.mp3"
             
             # Generate TTS audio
             await generate_tts_audio(i, text, filename)
