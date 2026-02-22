@@ -312,7 +312,7 @@ def read_wxc_posts_by_category_date_and_unsummarized(category, date_str):
     
     Args:
         category (str): The category to filter by
-        date_str (str): The date string in mmddyyyy format to filter by
+        date_str (str): The date string in yyyymmdd format to filter by
     
     Returns:
         list: List of posts matching the criteria, or empty list if none found
@@ -353,7 +353,7 @@ def read_wxc_post_summaries_by_category_date_and_is_useful(category, date_str):
     
     Args:
         category (str): The category to filter by
-        date_str (str): The date string in mmddyyyy format to filter by
+        date_str (str): The date string in yyyymmdd format to filter by
     
     Returns:
         list: List of (id, llm_summary) matching the criteria, or empty list if none found
