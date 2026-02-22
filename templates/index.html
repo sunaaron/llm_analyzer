@@ -147,12 +147,37 @@
         .delete-button:hover {
             background-color: #d32f2f;
         }
+        .filter-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+        .filter-label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .filter-select {
+            padding: 5px;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>WXC Posts Summary</h1>
-
+        
+        <!-- Filter section -->
+        <div class="filter-container">
+            <span class="filter-label">Filter by Useful Status:</span>
+            <select id="usefulFilter" class="filter-select" onchange="applyFilter()">
+                <option value="both" {% if filter == 'both' %}selected{% endif %}>Both</option>
+                <option value="useful_only" {% if filter == 'useful_only' %}selected{% endif %}>Useful Only</option>
+                <option value="useless_only" {% if filter == 'useless_only' %}selected{% endif %}>Useless Only</option>
+            </select>
+        </div>
+        
         {% if posts %}
             {% for post in posts %}
             <div class="post-container">
@@ -273,6 +298,14 @@
                     console.error('Error deleting post:', error);
                 });
             }
+        }
+
+        // Function to apply filter
+        function applyFilter() {
+            const filterValue = document.getElementById('usefulFilter').value;
+            
+            // Redirect to the same page with the filter parameter
+            window.location.href = `/?filter=${filterValue}`;
         }
     </script>
 </body>
