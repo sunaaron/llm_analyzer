@@ -74,6 +74,62 @@
             white-space: pre-wrap;
             word-break: break-word;
         }
+        .toggle-container {
+            margin-top: 10px;
+            padding: 5px;
+            float: right;
+        }
+        .toggle-label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 20px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+        .post-row-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .post-row-header-content {
+            flex: 1;
+        }
     </style>
 </head>
 <body>
@@ -86,6 +142,7 @@
             <li><strong>post_title</strong> - The title of the post</li>
             <li><strong>post_body</strong> - The content/body of the post</li>
             <li><strong>llm_summary</strong> - The LLM-generated summary of the post</li>
+            <li><strong>is_useful</strong> - Toggle indicating if this post is useful</li>
         </ul>
 
         {% if posts %}
@@ -94,14 +151,26 @@
                 <!-- Row 1: URL and Title -->
                 <div class="post-row">
                     <div class="post-row-container">
-                        <strong>URL:</strong>
-                        {% if post.post_url %}
-                            <a href="{{ post.post_url }}" target="_blank" style="color: #2196F3;">{{ post.post_url }}</a>
-                        {% else %}
-                            N/A
-                        {% endif %}
-                        <br>
-                        <strong>Title:</strong> {{ post.post_title }}
+                        <div class="post-row-header">
+                            <div class="post-row-header-content">
+                                <strong>URL:</strong>
+                                {% if post.post_url %}
+                                    <a href="{{ post.post_url }}" target="_blank" style="color: #2196F3;">{{ post.post_url }}</a>
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                                <br>
+                                <strong>Title:</strong> {{ post.post_title }}
+                            </div>
+                            <!-- Toggle for is_useful -->
+                            <div class="toggle-container">
+                                <span class="toggle-label">Is Useful:</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="toggle-{{ post.id }}" {% if post.is_useful %}checked{% endif %}>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -131,5 +200,42 @@
         
         <p><em>Note: Only posts with available LLM summaries are displayed.</em></p>
     </div>
+
+    <script>
+        // Add event listeners to all toggle switches
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggles = document.querySelectorAll('.toggle-switch input[type="checkbox"]');
+            
+            toggles.forEach(toggle => {
+                toggle.addEventListener('change', function() {
+                    const postId = this.id.replace('toggle-', '');
+                    const newValue = this.checked ? 1 : 0;
+                    
+                    // Send update request to server
+                    fetch(`/update_is_useful/${postId}/${newValue}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log(`Successfully updated is_useful for post ${postId}`);
+                        } else {
+                            console.error(`Failed to update is_useful for post ${postId}`);
+                            // Revert the toggle if update failed
+                            this.checked = !this.checked;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error updating is_useful:', error);
+                        // Revert the toggle if update failed
+                        this.checked = !this.checked;
+                    });
+                });
+            });
+        });
+    </script>
 </body>
 </html>

@@ -171,6 +171,52 @@ def update_wxc_post_llm_summary(post_id, llm_summary):
             cursor.close()
             connection.close()
 
+def update_wxc_post_is_useful(post_id, is_useful):
+    """
+    Update a post in wxc_posts table with the is_useful value.
+    
+    Args:
+        post_id (int): The ID of the post to update
+        is_useful (bool): The is_useful value to store (True/False)
+    
+    Returns:
+        bool: True if update was successful, False otherwise
+    """
+    connection = create_connection()
+    if connection is None:
+        return False
+    
+    try:
+        cursor = connection.cursor()
+        
+        # Convert boolean to integer (0 or 1) for storage in MySQL
+        is_useful_int = 1 if is_useful else 0
+        
+        # Query to update the post with is_useful value
+        update_query = """
+        UPDATE wxc_posts 
+        SET is_useful = %s 
+        WHERE id = %s
+        """
+        
+        cursor.execute(update_query, (is_useful_int, post_id))
+        connection.commit()
+        
+        if cursor.rowcount > 0:
+            print(f"Successfully updated is_useful for post with ID {post_id}")
+            return True
+        else:
+            print(f"No post found with ID {post_id} to update")
+            return False
+            
+    except Error as e:
+        print(f"Error updating wxc_posts table: {e}")
+        return False
+    finally:
+        if connection and connection.is_connected():
+            cursor.close()
+            connection.close()
+
 def read_wxc_posts_by_category_date_and_unsummarized(category, date_str):
     """
     Read posts from wxc_posts table filtered by category, date_str, 
