@@ -3,7 +3,7 @@
 Main entry point for the wxc_reader application.
 """
 import json
-from mysql_reader import read_wxc_posts_by_category_and_date, update_wxc_post_llm_summary
+from mysql_reader import read_wxc_posts_by_category_date_and_unsummarized, update_wxc_post_llm_summary
 from post_analyzer import analyze_with_llm
 from constants import LLM_IRRELEVANT_RESPONSE
 
@@ -12,7 +12,7 @@ def main():
     print("Fetching posts for category 'znjy' with date '02182026'...")
     
     # Fetch all posts of category "znjy" and date_str = "02182026"
-    posts = read_wxc_posts_by_category_and_date("znjy", "02182026")
+    posts = read_wxc_posts_by_category_date_and_unsummarized("znjy", "02182026")
     
     if posts:
         print(f"Successfully fetched {len(posts)} posts:")

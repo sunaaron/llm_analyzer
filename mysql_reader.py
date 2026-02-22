@@ -171,6 +171,47 @@ def update_wxc_post_llm_summary(post_id, llm_summary):
             cursor.close()
             connection.close()
 
+def read_wxc_posts_by_category_date_and_unsummarized(category, date_str):
+    """
+    Read posts from wxc_posts table filtered by category, date_str, 
+    and ensure llm_summary is empty or null (posts that haven't been summarized yet).
+    
+    Args:
+        category (str): The category to filter by
+        date_str (str): The date string in mmddyyyy format to filter by
+    
+    Returns:
+        list: List of posts matching the criteria, or empty list if none found
+    """
+    connection = create_connection()
+    if connection is None:
+        return []
+    
+    try:
+        cursor = connection.cursor(dictionary=True)
+        
+        # Query to select posts by category and date_str, 
+        # ensuring llm_summary is empty or null
+        select_query = """
+        SELECT * FROM wxc_posts 
+        WHERE category = %s AND date_str = %s 
+        AND (llm_summary IS NULL OR llm_summary = '' OR llm_summary = 'NULL')
+        """
+        
+        cursor.execute(select_query, (category, date_str))
+        results = cursor.fetchall()
+        
+        print(f"Found {len(results)} unsummarized posts matching category '{category}' and date '{date_str}'")
+        return results
+        
+    except Error as e:
+        print(f"Error reading from wxc_posts table: {e}")
+        return []
+    finally:
+        if connection and connection.is_connected():
+            cursor.close()
+            connection.close()
+
 def test_database_connection():
     """Test if we can connect to the database."""
     connection = create_connection()
