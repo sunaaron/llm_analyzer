@@ -30,4 +30,4 @@ ZNJY_PROMPT = f"""这是一个来自文学城子女教育的论坛帖子。请�
 TZLC_PROMPT = f"""这是一个来自文学城投资理财的论坛帖子。请首先判断这个帖子是否与金融, 投资, 房地产, 股市, 基金, 保险, 证券, 期货, 信托, 债券, 人民币, 外汇, 股票, 科技, 贵金属, 银行, 公司产品, 公司基本面，如果不是，请直接返回"{LLM_IRRELEVANT_RESPONSE}"。如果是，请务必用中文总结这篇论坛的帖子。根据原贴的题目和内容，以及回帖的内容，给出讨论的话题和结论。注意不要返回英文的总结. """
 
 TTS_VOICE_NAMES = ['zh-CN-XiaoxiaoNeural', 'zh-CN-YunyangNeural']  # Example voice name for TTS
-TTS_OUTPUT_DIR = '/Users/aaronsun/Dropbox/Audiobook/wxc/'  # Directory to save TTS audio files
+TTS_OUTPUT_DIR = '/Users/aaronsun/Dropbox/Audio/wxc/'  # Directory to save TTS audio files
