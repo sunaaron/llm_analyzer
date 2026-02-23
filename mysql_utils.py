@@ -147,3 +147,41 @@ def read_wxc_post_summaries_by_category_date_and_is_useful(category, date_str):
         if connection and connection.is_connected():
             cursor.close()
             connection.close()
+
+def read_wxc_posts_by_category_and_date(category, date_str):
+    """
+    Read posts from wxc_posts table filtered by category and date_str.
+    
+    Args:
+        category (str): The category to filter by
+        date_str (str): The date string in mmddyyyy format to filter by
+    
+    Returns:
+        list: List of posts matching the criteria, or empty list if none found
+    """
+    connection = create_connection()
+    if connection is None:
+        return []
+    
+    try:
+        cursor = connection.cursor(dictionary=True)
+        
+        # Query to select posts by category and date_str
+        select_query = """
+        SELECT * FROM wxc_posts 
+        WHERE category = %s AND date_str = %s
+        """
+        
+        cursor.execute(select_query, (category, date_str))
+        results = cursor.fetchall()
+        
+        print(f"Found {len(results)} posts matching category '{category}' and date '{date_str}'")
+        return results
+        
+    except Error as e:
+        print(f"Error reading from wxc_posts table: {e}")
+        return []
+    finally:
+        if connection and connection.is_connected():
+            cursor.close()
+            connection.close()
