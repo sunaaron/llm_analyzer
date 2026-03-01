@@ -3,7 +3,7 @@ import asyncio
 from fileinput import filename
 import edge_tts
 import argparse
-from mysql_utils import read_wxc_post_summaries_by_category_date_and_is_useful, read_wxc_posts_by_category_and_date
+from mysql_utils import read_wxc_post_summaries_by_category_and_is_useful_and_has_not_tts
 from datetime import datetime, timedelta
 from constants import TTS_VOICE_NAMES, TTS_OUTPUT_DIR 
 import os
@@ -55,8 +55,8 @@ async def generate_tts(category, date_str):
     
     print(f"Fetching posts for category '{category}' with date '{date_str}'...")
     
-    # Fetch all useful posts of the specified category and date_str
-    posts = read_wxc_post_summaries_by_category_date_and_is_useful(category, date_str)
+    # Fetch all useful posts of the specified category that do not have TTS generated and is_useful
+    posts = read_wxc_post_summaries_by_category_and_is_useful_and_has_not_tts(category)
 
     if posts:
         print(f"Successfully fetched {len(posts)} posts:")

@@ -148,16 +148,16 @@ def read_wxc_post_summaries_by_category_date_and_is_useful(category, date_str):
             cursor.close()
             connection.close()
 
-def read_wxc_posts_by_category_and_date(category, date_str):
+def read_wxc_post_summaries_by_category_and_is_useful_and_has_not_tts(category):
     """
-    Read posts from wxc_posts table filtered by category and date_str.
+    Read post LLM summaries from wxc_posts table filtered by category, 
+    is_useful = 1 and has_tts = 0.
     
     Args:
         category (str): The category to filter by
-        date_str (str): The date string in mmddyyyy format to filter by
     
     Returns:
-        list: List of posts matching the criteria, or empty list if none found
+        list: List of (id, llm_summary) matching the criteria, or empty list if none found
     """
     connection = create_connection()
     if connection is None:
@@ -166,16 +166,16 @@ def read_wxc_posts_by_category_and_date(category, date_str):
     try:
         cursor = connection.cursor(dictionary=True)
         
-        # Query to select posts by category and date_str
+        # Query to select posts by category, ensuring is_useful = 1 and has_tts = 0
         select_query = """
-        SELECT * FROM wxc_posts 
-        WHERE category = %s AND date_str = %s
+        SELECT id, post_url, llm_summary FROM wxc_posts 
+        WHERE category = %s AND is_useful = 1 AND has_tts = 0
         """
         
-        cursor.execute(select_query, (category, date_str))
+        cursor.execute(select_query, (category,))
         results = cursor.fetchall()
         
-        print(f"Found {len(results)} posts matching category '{category}' and date '{date_str}'")
+        print(f"Found {len(results)} posts matching category '{category}', is_useful = 1, and has_tts = 0")
         return results
         
     except Error as e:
