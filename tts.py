@@ -38,22 +38,13 @@ async def generate_tts_audio(id, category, text, filename):
         print(f"Error generating TTS for {filename}: {str(e)}")
         return None
 
-async def generate_tts(category, date_str):
-    """Main function to fetch posts by category and date.
+async def generate_tts(category):
+    """Main function to fetch posts by category.
     
     Args:
         category (str): The category to filter by. Defaults to 'znjy'.
-        date_str (str): The date string in yyyymmdd format. Defaults to today's date minus 3 days.
     """
-    # If no date_str provided, calculate it as today's date minus 3 days
-    if not date_str:
-        # Get current date and subtract 3 days
-        current_date = datetime.now()
-        three_days_ago = current_date - timedelta(days=3)
-        # Format as yyyymmdd
-        date_str = three_days_ago.strftime("%Y%m%d")
-    
-    print(f"Fetching posts for category '{category}' with date '{date_str}'...")
+    print(f"Fetching posts for category '{category}'...")
     
     # Fetch all useful posts of the specified category that do not have TTS generated and is_useful
     posts = read_wxc_post_summaries_by_category_and_is_useful_and_has_not_tts(category)
@@ -92,9 +83,8 @@ if __name__ == "__main__":
     # Parse command line arguments
     parser = argparse.ArgumentParser(description='Generate TTS for WXC posts')
     parser.add_argument('--category', default='znjy', help='Category to filter by (default: znjy)')
-    parser.add_argument('--date_str', default='', help='Date string in yyyymmdd format (default: 3 days ago)')
     
     args = parser.parse_args()
     
     # Call generate_tts function with parsed arguments
-    asyncio.run(generate_tts(args.category, args.date_str))
+    asyncio.run(generate_tts(args.category))
