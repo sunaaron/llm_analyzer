@@ -57,9 +57,6 @@ async def generate_tts(category, date_str):
     
     # Fetch all useful posts of the specified category and date_str
     posts = read_wxc_post_summaries_by_category_date_and_is_useful(category, date_str)
-    if len(posts) == 0:
-        # backup read
-        posts = read_wxc_posts_by_category_and_date(category, date_str)
 
     if posts:
         print(f"Successfully fetched {len(posts)} posts:")
