@@ -16,13 +16,13 @@ def summarize(category, date_str):
         category (str): The category to filter by. Defaults to 'znjy'.
         date_str (str): The date string in yyyymmdd format. Defaults to today's date minus 3 days.
     """
-    # If no date_str provided, calculate it as today's date minus 3 days
+    # If no date_str provided, calculate it as today's date minus 2 days
     if not date_str:
-        # Get current date and subtract 3 days
+        # Get current date and subtract 2 days
         current_date = datetime.now()
-        three_days_ago = current_date - timedelta(days=3)
+        two_days_ago = current_date - timedelta(days=2)
         # Format as yyyymmdd
-        date_str = three_days_ago.strftime("%Y%m%d")
+        date_str = two_days_ago.strftime("%Y%m%d")
     
     print(f"Fetching posts for category '{category}' with date '{date_str}'...")
     
