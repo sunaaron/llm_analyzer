@@ -3,7 +3,7 @@ import asyncio
 from fileinput import filename
 import edge_tts
 import argparse
-from mysql_utils import read_wxc_post_summaries_by_category_and_is_useful_and_has_not_tts
+from mysql_utils import read_wxc_post_summaries_by_category_and_is_useful_and_has_not_tts, update_has_tts_by_id
 from datetime import datetime, timedelta
 from constants import TTS_VOICE_NAMES, TTS_OUTPUT_DIR 
 import os
@@ -18,7 +18,7 @@ def remove_special_chars(text):
     """
     return text.replace('*', '').replace('#', '').replace('<br>', ' ').replace('-', '')
 
-async def generate_tts_audio(order, category, text, filename):
+async def generate_tts_audio(id, category, text, filename):
     """
     Generate TTS audio from text and save to file.
     
@@ -28,7 +28,7 @@ async def generate_tts_audio(order, category, text, filename):
     """
     try:
         cleaned_text = remove_special_chars(text)
-        index = order % len(TTS_VOICE_NAMES)
+        index = id % len(TTS_VOICE_NAMES)
         communicate = edge_tts.Communicate(cleaned_text, TTS_VOICE_NAMES[index])
         output_path = os.path.join(TTS_OUTPUT_DIR, category, filename)
         await communicate.save(output_path)
@@ -71,12 +71,18 @@ async def generate_tts(category, date_str):
                 'post_url': post.get('post_url', ''),
                 'llm_summary': post.get('llm_summary', ''),
             }
+            id = post_data['id']
             text = post_data['llm_summary']
             post_id = post_data['post_url'].split('/')[-1].split('.')[0]  # Extract post ID from URL
             filename = f"{category}_{post_data['id']}_{post_id}.mp3"
             
             # Generate TTS audio
-            await generate_tts_audio(i, category, text, filename)
+            output_path = await generate_tts_audio(id, category, text, filename)
+            
+            # Update has_tts flag if TTS was successfully generated
+            if output_path:
+                update_has_tts_by_id(id, 1)
+                print(f"Updated has_tts flag for post ID {id}")
             
     else:
         print("No posts found matching the criteria.")

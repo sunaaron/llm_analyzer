@@ -67,6 +67,50 @@ def update_wxc_post_llm_summary(post_id, llm_summary):
             connection.close()
 
 
+def update_has_tts_by_id(post_id, has_tts=1):
+    """
+    Update the has_tts field for a post in wxc_posts table.
+    
+    Args:
+        post_id (int): The ID of the post to update
+        has_tts (int): The value to set for has_tts field (default: 1)
+    
+    Returns:
+        bool: True if update was successful, False otherwise
+    """
+    connection = create_connection()
+    if connection is None:
+        return False
+    
+    try:
+        cursor = connection.cursor()
+        
+        # Query to update the has_tts field for the post
+        update_query = """
+        UPDATE wxc_posts 
+        SET has_tts = %s 
+        WHERE id = %s
+        """
+        
+        cursor.execute(update_query, (has_tts, post_id))
+        connection.commit()
+        
+        if cursor.rowcount > 0:
+            print(f"Successfully updated has_tts for post with ID {post_id}")
+            return True
+        else:
+            print(f"No post found with ID {post_id} to update")
+            return False
+            
+    except Error as e:
+        print(f"Error updating wxc_posts table: {e}")
+        return False
+    finally:
+        if connection and connection.is_connected():
+            cursor.close()
+            connection.close()
+
+
 def read_wxc_posts_by_category_date_and_unsummarized(category, date_str):
     """
     Read posts from wxc_posts table filtered by category, date_str, 
@@ -176,6 +220,44 @@ def read_wxc_post_summaries_by_category_and_is_useful_and_has_not_tts(category):
         results = cursor.fetchall()
         
         print(f"Found {len(results)} posts matching category '{category}', is_useful = 1, and has_tts = 0")
+        return results
+        
+    except Error as e:
+        print(f"Error reading from wxc_posts table: {e}")
+        return []
+    finally:
+        if connection and connection.is_connected():
+            cursor.close()
+            connection.close()
+
+def read_wxc_posts_by_category_and_date(category, date_str):
+    """
+    Read posts from wxc_posts table filtered by category and date_str.
+    
+    Args:
+        category (str): The category to filter by
+        date_str (str): The date string in mmddyyyy format to filter by
+    
+    Returns:
+        list: List of posts matching the criteria, or empty list if none found
+    """
+    connection = create_connection()
+    if connection is None:
+        return []
+    
+    try:
+        cursor = connection.cursor(dictionary=True)
+        
+        # Query to select posts by category and date_str
+        select_query = """
+        SELECT * FROM wxc_posts 
+        WHERE category = %s AND date_str = %s
+        """
+        
+        cursor.execute(select_query, (category, date_str))
+        results = cursor.fetchall()
+        
+        print(f"Found {len(results)} posts matching category '{category}' and date '{date_str}'")
         return results
         
     except Error as e:
