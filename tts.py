@@ -7,6 +7,7 @@ from mysql_utils import read_wxc_post_summaries_by_category_and_is_useful_and_ha
 from datetime import datetime, timedelta
 from constants import TTS_VOICE_NAMES, TTS_OUTPUT_DIR 
 import os
+import re
 
 def remove_special_chars(text):
     """
@@ -18,6 +19,22 @@ def remove_special_chars(text):
     """
     return text.replace('*', '').replace('#', '').replace('<br>', ' ').replace('-', '')
 
+def remove_url(text):
+    """
+    Remove URLs from text using regex.
+    
+    Args:
+        text (str): The input string to process
+
+    Returns:
+        str: The text with URLs removed
+    """
+    # Pattern to match URLs (http, https, ftp, etc.)
+    url_pattern = r'https?://(?:[-\w.])+(?:[:\d]+)?(?:/(?:[\w/!])*(?:\?(?:[\w.])=(?:[\w.])?)?(?:#(?:[\w.])?)?)?'
+    
+    # Remove URLs from text
+    return re.sub(url_pattern, '', text)
+
 async def generate_tts_audio(id, category, text, filename):
     """
     Generate TTS audio from text and save to file.
@@ -28,6 +45,7 @@ async def generate_tts_audio(id, category, text, filename):
     """
     try:
         cleaned_text = remove_special_chars(text)
+        cleaned_text = remove_url(cleaned_text)
         index = id % len(TTS_VOICE_NAMES)
         communicate = edge_tts.Communicate(cleaned_text, TTS_VOICE_NAMES[index])
         output_path = os.path.join(TTS_OUTPUT_DIR, category, filename)
