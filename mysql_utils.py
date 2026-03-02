@@ -212,7 +212,7 @@ def read_wxc_post_summaries_by_category_and_is_useful_and_has_not_tts(category):
         
         # Query to select posts by category, ensuring is_useful = 1 and has_tts = 0
         select_query = """
-        SELECT id, post_url, llm_summary FROM wxc_posts 
+        SELECT id, post_title, post_url, llm_summary FROM wxc_posts 
         WHERE category = %s AND is_useful = 1 AND has_tts = 0
         """
         

@@ -10,14 +10,10 @@ import os
 import re
 
 def remove_special_chars(text):
-    """
-    Remove * and # from a string.
-    
-    Args:
-        text (str): The input string to process
-
-    """
     return text.replace('*', '').replace('#', '').replace('<br>', ' ').replace('-', '')
+
+def remove_special_chars_from_post_title(post_title):
+    return post_title.replace('/', '').replace('\\', '').replace(',', ' ').replace('?', '')
 
 def remove_url(text):
     """
@@ -77,13 +73,15 @@ async def generate_tts(category):
             # Wrap each post as a dictionary with the required structure
             post_data = {
                 'id': post.get('id', ''),
+                'post_title': post.get('post_title', ''),
                 'post_url': post.get('post_url', ''),
                 'llm_summary': post.get('llm_summary', ''),
             }
             id = post_data['id']
             text = post_data['llm_summary']
             post_id = post_data['post_url'].split('/')[-1].split('.')[0]  # Extract post ID from URL
-            filename = f"{category}_{post_data['id']}_{post_id}.mp3"
+            post_title = remove_special_chars_from_post_title(post_data['post_title'])
+            filename = f"{category}_{post_data['id']}_{post_id}_{post_title}.mp3"
             
             # Generate TTS audio
             output_path = await generate_tts_audio(id, category, text, filename)
